@@ -61,7 +61,7 @@ function App() {
                 maxSalary={value.maxJdSalary}
                 minExp={value.minExp}
                 aboutCompany={value.jobDetailsFromCompany}
-                postedDays={10}
+                currencyCode={value.salaryCurrencyCode}
               />
             </Grid>
           ))}
