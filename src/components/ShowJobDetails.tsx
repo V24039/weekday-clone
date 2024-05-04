@@ -1,10 +1,13 @@
 import { Grid } from "@mui/material";
 import useInfiniteScroll from "react-infinite-scroll-hook";
-import { IJobDetails } from "../App";
+import { FiltersContext, IJobDetails } from "../App";
 import useLoader from "../hooks/useLoader";
 import { JobCard } from "./Card";
+import { useContext } from "react";
 
 const ShowJobDetails = () => {
+  const { filters } = useContext(FiltersContext);
+
   const {
     jobDetails,
     hasNextPage,
@@ -25,14 +28,30 @@ const ShowJobDetails = () => {
     return <div>loading</div>;
   }
 
+  const filterdJobs = () => {
+    if (filters.length !== 0) {
+      const filtered: IJobDetails[] = [];
+
+      filters?.forEach((element: any) => {
+        if (element.key === "jobRole") {
+          filtered?.push(
+            ...jobDetails?.filter((value) => value?.jobRole === element?.value)
+          );
+        }
+      });
+      return filtered;
+    }
+    return jobDetails;
+  };
+
   return (
     <Grid container spacing={6}>
       {jobDetails?.length > 0 &&
-        jobDetails?.map((value: IJobDetails) => (
+        filterdJobs()?.map((value: IJobDetails) => (
           <Grid item xs={12} sm={6} lg={4}>
             <JobCard
               jdUid={value?.jdUid}
-              companyName="Company Name"
+              companyName={value.companyName || "Company Name"}
               roleTitle={value.jobRole}
               location={value.location}
               minSalary={value.minJdSalary}

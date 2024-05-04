@@ -8,6 +8,8 @@ import {
   Chip,
 } from "@mui/material";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
+import { useContext } from "react";
+import { FiltersContext } from "../App";
 
 interface ISelectDropDownProps {
   options: {
@@ -15,18 +17,26 @@ interface ISelectDropDownProps {
     label: string;
   }[];
   label: string;
+  key: string;
 }
 
 export default function SelectDropDown({
   options,
   label,
+  key,
 }: ISelectDropDownProps) {
   const [selectedValue, setSetSelectedValue] = React.useState<string[]>([]);
+
+  const { filters, setFilters } = useContext(FiltersContext);
 
   const handleChange = (event: SelectChangeEvent<typeof selectedValue>) => {
     const {
       target: { value },
     } = event;
+    setFilters([
+      ...filters,
+      { key: key, value: typeof value === "string" ? value.split(",") : value },
+    ]);
     setSetSelectedValue(typeof value === "string" ? value.split(",") : value);
   };
 
