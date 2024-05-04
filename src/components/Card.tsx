@@ -17,6 +17,7 @@ interface IJobCardProps {
   minExp: number;
   aboutCompany: string;
   currencyCode: string;
+  jdUid: string;
 }
 
 export const StyledCard = styled(Card)(({ theme }) => ({
@@ -35,7 +36,7 @@ export const JobCard = (props: IJobCardProps) => {
   };
 
   return (
-    <StyledCard variant="outlined">
+    <StyledCard variant="outlined" id={props.jdUid}>
       <CardContent sx={{ paddingBottom: "0px" }}>
         <Typography component="h3" color="GrayText">
           {props?.companyName || ""}
@@ -45,7 +46,9 @@ export const JobCard = (props: IJobCardProps) => {
         <Typography color="GrayText" fontSize="12px">
           Estimated Salary: {getSalary()}
         </Typography>
-        <Typography component="h1" variant="body1">About Company:</Typography>
+        <Typography component="h1" variant="body1">
+          About Company:
+        </Typography>
         <Typography component="article">About us</Typography>
         <Typography
           variant="body2"

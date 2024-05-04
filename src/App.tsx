@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import "./App.css";
 import { JobCard } from "./components/Card";
 import {
@@ -12,8 +11,10 @@ import {
 } from "@mui/material";
 import SelectDropDown from "./components/SelectDropdown";
 import { DropDowns, RolesOption } from "./consts";
+import useLoader from "./hooks/useLoader";
+import useInfiniteScroll from "react-infinite-scroll-hook";
 
-interface IJobDetails {
+export interface IJobDetails {
   jdUid: string;
   jdLink: string;
   jobDetailsFromCompany: string;
@@ -27,31 +28,21 @@ interface IJobDetails {
 }
 
 function App() {
-  const [jobDetails, setJobDetails] = useState<any>();
+  const {
+    jobDetails,
+    hasNextPage,
+    isLoading,
+    error,
+    currentOffset,
+    fetchJobDetails,
+  } = useLoader(0);
 
-  const myHeaders = new Headers();
-  myHeaders.append("Content-Type", "application/json");
-
-  const body = JSON.stringify({
-    limit: 10,
-    offset: 0,
+  const [sentryRef] = useInfiniteScroll({
+    loading: isLoading,
+    hasNextPage,
+    onLoadMore: () => fetchJobDetails(currentOffset + 1),
+    disabled: !!error,
   });
-
-  const requestOptions = {
-    method: "POST",
-    headers: myHeaders,
-    body,
-  };
-
-  useEffect(() => {
-    fetch(
-      "https://api.weekday.technology/adhoc/getSampleJdJSON",
-      requestOptions
-    )
-      .then((response) => response.json())
-      .then((result) => setJobDetails(result.jdList))
-      .catch((error) => console.error(error));
-  }, []);
 
   if (jobDetails?.length === 0) {
     return <div>loading</div>;
@@ -86,6 +77,7 @@ function App() {
           jobDetails?.map((value: IJobDetails) => (
             <Grid item xs={12} sm={6} lg={4}>
               <JobCard
+                jdUid = {value?.jdUid}
                 companyName="Company Name"
                 roleTitle={value.jobRole}
                 location={value.location}
@@ -97,6 +89,11 @@ function App() {
               />
             </Grid>
           ))}
+        {hasNextPage && (
+          <div ref={sentryRef}>
+            Loading
+          </div>
+        )}
       </Grid>
     </div>
   );
